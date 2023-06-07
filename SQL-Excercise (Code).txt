@@ -1,0 +1,529 @@
+CREATE TABLE sales_people(
+S_num INT PRIMARY KEY NOT NULL,
+S_name VARCHAR(15),
+city VARCHAR(15),
+Comm DECIMAL(10,2)
+);
+
+CREATE TABLE customers(
+C_num INT PRIMARY KEY NOT NULL,
+C_name VARCHAR(15),
+city VARCHAR(10),
+rating INT,
+S_num INT,
+FOREIGN KEY(S_num) REFERENCES sales_people(S_num) ON DELETE SET NULL
+);
+
+CREATE TABLE Orders(
+O_num INT PRIMARY KEY NOT NULL,
+amt FLOAT,
+O_date DATE,
+C_num INT,
+S_num INT,
+FOREIGN KEY(S_num) REFERENCES Sales_people(S_num) ON DELETE SET NULL,
+FOREIGN KEY(C_num) REFERENCES Customers(C_num) ON DELETE SET NULL
+);
+
+SHOW TABLES
+From Practice ;
+
+DESCRIBE sales_people;
+
+SELECT * FROM sales_people;
+SELECT * FROM customers;
+SELECT * FROM orders;
+
+INSERT INTO sales_people VALUES
+(1001, 'Peel', 'London', .12);
+
+INSERT INTO sales_people VALUES
+(1002, 'Serres', 'San jose', .13),
+(1004, 'Motika', 'London', .11),
+(1007, 'Rifkin', 'Barcelona', .15),
+(1003, 'Axlerod', 'New york', .1);
+
+
+INSERT INTO customers VALUES
+(2001, 'Hoffman', 'London', 100, 1001),
+(2002, 'Giovanni', 'Rome', 200, 1003),
+(2003, 'Liu', 'San jose', 200, 1002),
+(2004, 'Grass', 'Berlin', 300, 1002),
+(2006, 'Clemens', 'London', 100, 1001),
+(2008, 'Cisneros', 'San jose', 300, 1007),
+(2007, 'Pereeia', 'Rome', 100, 1004);
+
+
+SELECT * FROM customers ;
+
+
+INSERT INTO orders VALUES
+(3001, 18.69, '1990-03-10', 2008, 1007);
+
+UPDATE orders
+SET o_date = '1990-03-10'
+WHERE o_num = 3001;
+
+INSERT INTO orders VALUES
+(3003, 767.19, '1990-03-10', 2001, 1001),
+(3002, 1900.1, '1990-03-10', 2007, 1004),
+(3005, 51.6, '1990-03-10', 2003, 1002),
+(3006, 1098.16, '1990-03-10', 2008, 1007),
+(3009, 1713.23, '1990-04-10', 2002, 1003),
+(3007, 75.75, '1990-04-10', 2004, 1002),
+(3008, 4723, '1990-05-10', 2006, 1001),
+(3010, 1309.95, '1990-06-10', 2004, 1002),
+(3011, 9891.88, '1990-06-10', 2006, 1001);
+
+
+                                 # *** ANSERING QUESTIONS ***
+                                        #(QUERY WRITING);
+                                  
+#1st
+SELECT o_num, amt
+FROM orders;
+
+#2nd
+SELECT *
+FROM Customers
+WHERE c_num = 2001;
+
+#3rd
+SELECT city, s_name, s_num, comm
+FROM sales_people;
+
+#4th
+SELECT rating, sales_people.s_name
+FROM customers
+INNER JOIN Sales_people 
+ON sales_people.s_num = customers.s_num
+WHERE sales_people.city = 'San jose';
+
+# --5th;
+SELECT sales_people.s_num, sales_people.s_name
+FROM sales_people
+LEFT JOIN orders
+ON sales_people.s_num = orders.s_num 
+GROUP BY s_name;
+
+#--6th;
+SELECT o_num
+FROM orders
+WHERE amt > 1000;
+
+#--7th;
+SELECT s_name , city 
+FROM sales_people 
+WHERE city = 'London' AND comm > 0.10;
+
+#8th;
+SELECT *
+FROM customers
+WHERE rating < 100 OR city = 'Rome';
+
+#9th;
+SELECT *
+FROM orders
+WHERE amt < 1000 OR o_date <> '1990-03-10' AND NOT c_num < 2003;
+
+#11th;
+SELECT * 
+FROM sales_people
+WHERE comm >.12 OR comm < .14 ;
+
+#12TH;
+SELECT o_date
+FROM orders
+WHERE o_date = '1990-10-03' OR o_date = '1990-10-04' ;
+
+#13th;
+SELECT  customers.c_name , customers.c_num
+FROM sales_people
+RIGHT JOIN customers
+ON sales_people.s_num = customers.s_num
+WHERE s_name = 'Peel' OR s_name = 'Motika';
+
+#14th
+SELECT c_name
+FROM customers
+WHERE c_name LIKE 'G%' OR c_name LIKE'A%';
+
+#15TH
+SELECT o_num
+FROM orders
+WHERE amt = 0 OR amt = NULL;
+
+#16th
+SELECT c_name
+FROM customers
+WHERE city <> 'London' AND city <> 'San jose';
+
+#17TH
+SELECT SUM(amt),
+AVG( amt),
+MAX(amt),
+MIN(amt),
+COUNT(amt)
+FROM orders;
+
+#18th
+SELECT SUM(DISTINCT amt)
+FROM Orders
+GROUP BY o_date ;
+
+#19TH
+SELECT COUNT(c_name)
+FROM customers;
+
+#20th
+SELECT COUNT(DISTINCT c_name) AS Unique_customers
+FROM customers;
+
+#21st
+SELECT o_date
+FROM orders
+WHERE o_date = '1990-10-01';
+
+#22nd
+SELECT COUNT(CITY), city
+FROM customers
+WHERE city IS NOT NULL
+GROUP BY city;
+
+#23RD
+SELECT  MIN(orders.amt), customers.c_name, orders.o_num 
+FROM Customers
+INNER JOIN orders
+ON customers.c_num = orders.c_num
+GROUP BY c_name;
+
+#24TH
+SELECT MAX(rating), city
+FROM customers
+GROUP BY city;
+
+#25th
+SELECT COUNT(s_name), o_date , s_name
+FROM sales_people
+INNER JOIN orders ON sales_people.s_num = orders.s_num
+GROUP BY o_date ;
+
+#26TH
+SELECT orders.o_num , orders.s_num , orders.amt , sales_people.comm
+FROM orders
+INNER JOIN sales_people
+ON orders.s_num = sales_people.s_num
+ORDER BY o_num ASC ; 
+ 
+#27TH
+SELECT MAX(rating) AS Highest_Rating , city
+FROM customers
+GROUP BY city;
+
+#28th
+SELECT MAX(o_date), COUNT(o_date), s_name, amt
+FROM orders
+INNER JOIN sales_people
+ON sales_people.s_num = orders.s_num
+GROUP BY s_name;
+
+#29
+SELECT MAX(o_date), sales_people.s_name, sales_people.s_num
+FROM sales_people
+INNER JOIN orders
+ON sales_people.s_num = orders.s_num 
+WHERE o_date = '1990-03-10' 
+GROUP BY s_name ;
+
+#30TH
+SELECT rating  , c_name , s_num
+FROM customers 
+ORDER BY rating DESC ;
+
+#31ST
+SELECT COUNT(o_date), o_date
+FROM orders
+GROUP BY o_date
+ORDER BY COUNT(o_date) DESC;
+
+#32ND
+SELECT sales_people.s_num , sales_people.s_name , sales_people.city , customers.c_num , customers.c_name , customers.city , orders.o_num , orders.amt , orders.o_date
+FROM sales_people
+LEFT JOIN customers ON sales_people.s_num = customers.s_num 
+LEFT JOIN orders ON sales_people.s_num = orders.s_num 
+WHERE sales_people.city <> customers.city ;
+
+#33rd
+SELECT orders.o_num , orders.c_num 
+FROM orders
+INNER JOIN customers
+ON orders.c_num = customers.c_num
+ORDER BY o_num; 
+
+#34th
+SELECT orders.o_num , customers.c_name , sales_people.s_name
+FROM orders
+INNER JOIN customers ON orders.c_num = customers.c_num
+INNER JOIN sales_people ON sales_people.s_num = orders.s_num
+ORDER BY o_num;
+
+#35th
+SELECT customers.c_num , customers.c_name , sales_people.s_num , sales_people.s_name 
+FROM sales_people
+INNER JOIN customers
+ON sales_people.s_num = customers.s_num 
+WHERE comm > .12 ;
+
+#36th
+SELECT sum(comm * amt) AS Commision , s_name , o_num
+FROM sales_people
+INNER JOIN orders ON sales_people.s_num = orders.s_num
+INNER JOIN Customers ON sales_people.s_num = customers.s_num
+WHERE rating > 100
+GROUP BY orders.o_num
+ORDER BY o_num ;
+                                     #OR
+									
+SELECT amt , comm
+FROM sales_people
+INNER JOIN customers ON sales_people.s_num = customers.s_num
+INNER JOIN orders ON sales_people.s_num = orders.s_num
+WHERE rating > 100;
+
+                                #(NESTED QUERY)
+
+#37th
+SELECT customers.c_name
+FROM customers
+WHERE customers.city IN 
+     (SELECT sales_people.city
+      FROM sales_people
+      WHERE sales_people.s_name = 'Serres');
+
+#38TH
+ SELECT c_name, city
+ FROM customers
+ WHERE rating IN
+			  (SELECT rating
+			   FROM customers
+               WHERE c_name = 'Hoffman');
+ 
+                             #(NESTED QUERY)        
+#39th  
+SELECT s_name
+FROM sales_people
+WHERE s_num IN 
+           ( SELECT s_num
+            FROM customers
+            WHERE c_name = 'Clemens' OR c_name = 'Liu'); 
+            
+ 
+               
+#40TH
+SELECT o_num
+FROM orders
+WHERE C_num = 2001;   
+
+#41ST
+
+SELECT orders.o_num
+FROM orders
+WHERE orders.s_num IN
+                    ( SELECT sales_people.s_num
+                      FROM sales_people
+                      WHERE sales_people.city = 'London' );
+                                      
+                                      #OR
+                                      
+SELECT sales_people.s_name , orders.o_num
+FROM sales_people
+INNER JOIN orders
+ON sales_people.s_num = orders.s_num
+WHERE sales_people.city = 'London' ;
+
+#42ND
+
+SELECT customers.c_name, customers.rating
+FROM customers
+WHERE customers.c_num IN
+    (SELECT orders.c_num
+     FROM orders
+     WHERE orders.amt >  (SELECT avg(amt) 
+                          FROM orders)) ;
+                                                   
+												#****  OR  ****
+
+SELECT DISTINCT customers.c_name, customers.rating
+FROM customers  
+INNER JOIN orders
+ON customers.c_num = orders.c_num
+WHERE amt > ( SELECT AVG(amt)
+              FROM orders) ;                   
+                          
+     
+#43RD                           (USE DISTINCT)
+              
+SELECT DISTINCT customers.c_num , customers.c_name
+FROM customers
+WHERE rating > ( SELECT AVG(rating) 
+				FROM customers
+                WHERE customers.city = 'San jose') ;
+#44th
+SELECT s_name
+FROM Sales_people 
+WHERE s_num IN (SELECT s_num
+                FROM customers
+                WHERE Sales_people.city = customers.city);
+                
+                                     ### OR ###
+                
+SELECT sales_people.s_num , sales_people.s_name , customers.c_num , customers.c_name
+FROM sales_people
+INNER JOIN customers
+ON sales_people.s_num = customers.s_num
+WHERE sales_people.city = customers.city;  #(additional info like s_num,c_num & c_name added)
+
+#45th
+SELECT * 
+FROM  sales_people
+INNER JOIN customers
+ON sales_people.s_num = customers.s_num
+WHERE sales_people.city = customers.city ; 
+
+#46th
+SELECT orders.o_num
+FROM orders
+INNER JOIN sales_people
+ON orders.s_num = sales_people.s_num
+WHERE sales_people.s_name = 'Motika' ;  
+
+#47th
+SELECT  sales_people.s_num , s_name , city , comm , o_num 
+FROM sales_people
+INNER JOIN orders
+ON sales_people.s_num = orders.s_num
+WHERE sales_people.city = 'Barcelona' ; 
+
+#48th
+SELECT o_num
+FROM orders
+WHERE s_num = 1001 ;
+
+
+ #49th
+SELECT o_num
+FROM orders
+WHERE o_date = '1990-05-10' AND amt > (SELECT AVG(amt)
+									   FROM orders) ;
+                                       
+#5OTH
+SELECT o_num
+FROM orders
+INNER JOIN sales_people
+ON  sales_people.s_num = orders.s_num
+WHERE sales_people.city = 'London' ;  
+
+#51st
+SELECT *
+FROM customers
+WHERE rating > (SELECT AVG(rating)
+                FROM customers
+                WHERE city = 'San jose');   
+  
+#52Nd
+SELECT  *
+FROM customers
+WHERE rating > ANY(SELECT rating 
+                   FROM customers
+                   WHERE city = 'Rome');    #(doubt) solved 
+                
+#53rd
+SELECT *
+FROM orders
+WHERE amt > ANY(SELECT amt
+             FROM orders
+             WHERE o_date = '1990-05-10');
+
+#54th****************
+SELECT *
+FROM customers
+INNER JOIN orders
+ON customers.c_num = orders.c_num
+WHERE amt < ANY (SELECT amt
+				 FROM orders
+				 INNER JOIN customers 
+                 ON Customers.c_num = orders.c_num
+				 WHERE customers.city = 'San jose');   #(doubt) solved (Re-solved)
+             
+             
+#55th
+SELECT o_num, amt, o_date, orders.c_num , orders.s_num, c_name
+FROM orders
+INNER JOIN customers
+ON orders.c_num = customers.c_num
+WHERE customers.rating >  ALL (SELECT rating
+					           FROM customers
+							   WHERE city = 'Rome') ;
+                     
+                     ### OR ###
+                     
+SELECT * 
+FROM customers
+WHERE rating > ALL (SELECT rating
+					FROM customers
+                    WHERE city = 'Rome');                     
+                    	
+					
+#56th
+SELECT s_num, s_name, sales_people.city, comm
+FROM sales_people
+WHERE city = 'London'
+UNION
+SELECT  customers.c_num , customers.c_name, customers.city, customers.rating
+FROM customers    
+WHERE city = 'London';
+
+#57th
+SELECT  MAX(amt) , MIN(amt) , s_name
+FROM orders
+INNER JOIN sales_people
+ON orders.s_num = sales_people.s_num
+GROUP BY sales_people.s_num  ;
+
+#59th
+CREATE VIEW AVG_TOTAL_View AS
+SELECT s_name, AVG(o_num) AS Average_orders, COUNT(o_num) AS Total_orders
+FROM orders
+INNER JOIN sales_people
+ON sales_people.s_num = orders.s_num
+GROUP BY orders.s_num ;
+
+SELECT *
+FROM AVG_Total_view ;
+
+#60th
+CREATE VIEW SP_CS_view AS
+SELECT s_name , c_name
+FROM sales_people
+INNER JOIN customers
+ON sales_people.s_num = customers.s_num
+WHERE sales_people.s_num = customers.s_num ;
+
+SELECT *
+FROM SP_CS_view ;
+
+#61th
+UPDATE sales_people
+SET s_name = 'Gibson'
+WHERE s_num = 1001 ;
+
+#62th
+CREATE VIEW CS_ORD AS
+SELECT customers.c_num , c_name, o_num , o_date
+FROM customers
+INNER JOIN orders
+ON customers.c_num = orders.c_num
+WHERE customers.c_num = orders.c_num
+ORDER BY o_num ASC ;
+
+SELECT * 
+FROM CS_ORD ;
